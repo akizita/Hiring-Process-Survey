@@ -131,10 +131,16 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     assert.equal(await page.locator('.splash-screen').evaluate((screen) => getComputedStyle(screen).backgroundColor), 'rgb(247, 245, 239)');
     const aurora = await page.evaluate(() => ({
       page: getComputedStyle(document.querySelector('.page-shell'), '::before').backgroundImage,
+      underCard: getComputedStyle(document.querySelector('.page-shell'), '::after').backgroundImage,
       splash: getComputedStyle(document.querySelector('.splash-screen'), '::before').backgroundImage,
+      glass: getComputedStyle(document.querySelector('.survey-card')).backdropFilter,
     }));
     assert.equal((aurora.page.match(/radial-gradient/g) || []).length, 4);
     assert.equal((aurora.splash.match(/radial-gradient/g) || []).length, 3);
+    assert.match(aurora.page, /255, 157, 31/, 'the aurora includes button-coordinated yellow-orange');
+    assert.match(aurora.splash, /255, 160, 32/, 'the splash includes yellow-orange');
+    assert.match(aurora.underCard, /radial-gradient/, 'a gold glow sits beneath the card');
+    assert.match(aurora.glass, /blur\(22px\)/, 'the card blurs the glow through its translucent surface');
     await page.screenshot({ path: join('test-artifacts', 'hiring-splash-fallback-320.png') });
     await page.locator('#splash-screen').waitFor({ state: 'hidden', timeout: 5000 });
     assert.equal(await page.locator('.survey-card').evaluate((card) => card.inert), false);
@@ -166,13 +172,36 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await page.getByRole('button', { name: 'Continue' }).click();
     assert.match(await page.locator('#modal-title').textContent(), /Choose a rating/);
     await page.getByRole('button', { name: 'OK' }).click();
-    await page.locator('input[name="professionalismRating"][value="5"]').check();
+    assert.equal(await page.locator('.rating-options svg').count(), 15);
+    await page.locator('[data-rating="professionalismRating"] label:nth-child(4)').hover();
+    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 4, 'pointer previews a wave of stars');
+    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-peak').getAttribute('data-rating-tip'), '4 of 5');
+    await page.waitForTimeout(260);
+    const peekStyle = await page.locator('[data-rating="professionalismRating"] label.is-peak').evaluate((label) => ({
+      tooltipOpacity: getComputedStyle(label, '::after').opacity,
+      starTransform: getComputedStyle(label.querySelector('span')).transform,
+    }));
+    assert.equal(peekStyle.tooltipOpacity, '1', 'the preview displays its rating tooltip');
+    assert.notEqual(peekStyle.starTransform, 'none', 'the preview lifts the highlighted star');
+    await page.mouse.move(0, 0);
+    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 0, 'preview clears when pointer leaves');
+    await page.locator('[data-rating="professionalismRating"] label:nth-child(5)').click();
+    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 5, 'selection persists after preview');
+    await page.locator('input[name="roleClarityRating"][value="3"]').focus();
+    await page.keyboard.press('Home');
+    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '1');
+    await page.keyboard.press('End');
+    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '5');
     await page.locator('input[name="roleClarityRating"][value="3"]').focus();
     await page.keyboard.press('ArrowRight');
     assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '4');
-    await page.locator('input[name="overallRating"][value="5"]').check();
+    await page.locator('[data-rating="overallRating"] label:nth-child(5)').click();
+    assert.equal(await page.locator('input[name="overallRating"]:checked').inputValue(), '5');
+    assert.equal(await page.locator('[data-rating="overallRating"] label.is-lit').count(), 5);
     assert.deepEqual(await page.locator('.rating-endpoints').allTextContents(), ['Very PoorExcellent', 'Very PoorExcellent', 'Very PoorExcelllent']);
     await page.setViewportSize({ width: 1366, height: 768 });
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(250);
     await page.screenshot({ path: join('test-artifacts', 'hiring-ratings-desktop.png') });
     await page.setViewportSize({ width: 390, height: 844 });
     await page.screenshot({ path: join('test-artifacts', 'hiring-ratings-mobile.png') });
@@ -242,11 +271,12 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     assert.match(await page.locator('#step-caption').textContent(), /Step 1 of 3/);
     assert.equal(await page.locator('#recruiterName').inputValue(), '');
     assert.equal(await page.locator('#recruiterFeedback').inputValue(), '');
+    assert.equal(await page.locator('.rating-options input:checked').count(), 0, 'a new response starts with clear ratings');
     await page.locator('#recruiterName-trigger').click();
     await page.getByRole('option', { name: 'Ella' }).click();
     await page.getByRole('button', { name: 'Continue' }).click();
     for (const name of ['professionalismRating', 'roleClarityRating', 'overallRating']) {
-      await page.locator(`input[name="${name}"][value="1"]`).check();
+      await page.locator(`[data-rating="${name}"] label:nth-child(1)`).click();
     }
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.locator('#recruiterFeedback').fill('Helpful interview.');
@@ -288,6 +318,13 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await reduced.locator('#splash-screen').waitFor({ state: 'hidden' });
     assert.equal(await reduced.locator('#splash-video').evaluate((video) => video.currentSrc), '');
     assert.equal(await reduced.locator('.survey-card').evaluate((card) => card.inert), false);
+    await reduced.locator('#recruiterName-trigger').click();
+    await reduced.getByRole('option', { name: 'Ella' }).click();
+    await reduced.getByRole('button', { name: 'Continue' }).click();
+    await reduced.locator('[data-rating="professionalismRating"] label:nth-child(3)').hover();
+    assert.equal(await reduced.locator('[data-rating="professionalismRating"] label.is-peak span').evaluate((span) => getComputedStyle(span).transform), 'none');
+    await reduced.locator('[data-rating="professionalismRating"] label:nth-child(3)').click();
+    assert.equal(await reduced.locator('input[name="professionalismRating"]:checked').inputValue(), '3');
     await reduced.close();
   } finally {
     await browser.close();
