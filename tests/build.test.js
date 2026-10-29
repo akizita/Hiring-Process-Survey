@@ -31,6 +31,8 @@ test('production frontend has the light splash assets and no server secret or we
   }
   assert.equal(built.some((path) => path.replaceAll('\\', '/').endsWith('/assets/opg-splash-ink.png')), true);
   assert.equal(built.some((path) => path.replaceAll('\\', '/').endsWith('/assets/opg-afterfx-poster.png')), true);
+  assert.match(builtText, /<link rel="icon" type="image\/png" href="\/assets\/Logo-[^"]+\.png"\s*\/?>/);
+  assert.equal(built.some((path) => /\/assets\/Logo-[^/]+\.png$/.test(path.replaceAll('\\', '/'))), true);
 });
 
 test('Vercel configuration retains restrictive headers and a static Vite build', () => {
