@@ -94,7 +94,7 @@ test('light survey stays reachable and saves only after the workflow confirms a 
   const n8n = createHttpServer(async (request, response) => {
     assert.equal(request.method, 'POST');
     assert.equal(request.url, '/webhook-test/mock-hiring-feedback');
-    assert.equal(request.headers['x-opg-survey-key'], secret);
+    assert.equal(request.headers['x-opg-hiring-survey-key'], secret);
     const chunks = [];
     for await (const chunk of request) chunks.push(chunk);
     const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
@@ -157,7 +157,7 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     assert.equal(await page.locator('#page-title').textContent(), 'Recruitment Process Feedback Form');
     assert.equal(await page.locator('#name').count(), 0);
     assert.equal(await page.locator('#email').count(), 0);
-    assert.equal(await page.locator('#recruiterName option').count(), 10);
+    assert.equal(await page.locator('#recruiterName option').count(), 5);
     await assertReachable(page, 'recruiter', '[data-form-step="0"] [data-next]');
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.screenshot({ path: join('test-artifacts', 'hiring-recruiter-desktop.png') });
@@ -173,7 +173,7 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await page.keyboard.press('ArrowDown');
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
-    assert.equal(await page.locator('#recruiterName').inputValue(), 'Glam');
+    assert.equal(await page.locator('#recruiterName').inputValue(), 'Joy');
     await page.getByRole('button', { name: 'Continue' }).click();
     assert.match(await page.locator('#step-caption').textContent(), /Step 2 of 3/);
     await assertReachable(page, 'ratings', '[data-form-step="1"] [data-next]');
@@ -232,7 +232,7 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await page.locator('.survey-card').evaluate((card) => { card.scrollTop = 0; });
     await page.screenshot({ path: join('test-artifacts', 'hiring-ratings-mobile.png') });
     await page.getByRole('button', { name: 'Back' }).click();
-    assert.equal(await page.locator('#recruiterName').inputValue(), 'Glam');
+    assert.equal(await page.locator('#recruiterName').inputValue(), 'Joy');
     await page.getByRole('button', { name: 'Continue' }).click();
     assert.equal(await page.locator('input[name="roleClarityRating"]').inputValue(), '4');
     await page.getByRole('button', { name: 'Continue' }).click();

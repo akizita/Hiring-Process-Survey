@@ -1,4 +1,4 @@
-export const RECRUITERS = Object.freeze(['Ella', 'Hanna', 'Allen', 'Joy', 'Liz', 'Paris', 'Karen', 'Fia', 'Glam']);
+export const RECRUITERS = Object.freeze(['Ella', 'Hanna', 'Allen', 'Joy']);
 export const RATINGS = Object.freeze(['1', '2', '3', '4', '5']);
 export const MAX_FEEDBACK_LENGTH = 4000;
 export const SUCCESS_MESSAGE = 'Thank you for your feedback. Your response has been saved.';

@@ -29,7 +29,7 @@ All six fields are required. Preserve the question wording and answer values bel
 
 | Step | Field | Exact prompt | Input and allowed values |
 | --- | --- | --- | --- |
-| 1 — Recruiter | `recruiterName` | Recruiter's Name | Single choice: Ella, Hanna, Allen, Joy, Liz, Paris, Karen, Fia, Glam |
+| 1 — Recruiter | `recruiterName` | Recruiter's Name | Single choice: Ella, Hanna, Allen, Joy |
 | 2 — Your ratings | `professionalismRating` | 1. Was the recruiter professional and respectful throughout the process? | 1, 2, 3, 4, 5; endpoint labels “Very Poor” and “Excellent” |
 | 2 — Your ratings | `roleClarityRating` | 2. Did the recruiter clearly explain the role, requirements, and expectations? | 1, 2, 3, 4, 5; endpoint labels “Very Poor” and “Excellent” |
 | 2 — Your ratings | `overallRating` | 3. How would you rate your overall experience with the recruiter? | 1, 2, 3, 4, 5; endpoint labels “Very Poor” and “Excelllent” |

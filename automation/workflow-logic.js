@@ -11,7 +11,7 @@ export function validateSurveyRequest(rawBody) {
   if (keys.some((key) => !Object.hasOwn(body, key) || typeof body[key] !== 'string')) return invalid;
 
   const responseId = body.responseId.trim();
-  const recruiters = ['Ella', 'Hanna', 'Allen', 'Joy', 'Liz', 'Paris', 'Karen', 'Fia', 'Glam'];
+  const recruiters = ['Ella', 'Hanna', 'Allen', 'Joy'];
   const ratings = ['1', '2', '3', '4', '5'];
   const feedback = (value) => {
     const text = value.replace(/\r\n?/g, '\n').trim();
