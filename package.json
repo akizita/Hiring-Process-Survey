@@ -1,0 +1,21 @@
+{
+  "name": "opg-recruitment-feedback-survey",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "workflows:build": "node automation/build-workflows.mjs",
+    "test": "node --test tests/survey.test.js tests/workflows.test.js tests/server.test.js tests/build.test.js",
+    "test:browser": "node --test tests/browser.test.js"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.0",
+    "vite": "^8.0.0"
+  }
+}

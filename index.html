@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta name="description" content="Share feedback on the Outsourced Pro Global recruitment process." />
+    <title>Recruitment Process Feedback Form | OPG</title>
+    <link rel="preload" as="image" href="/assets/opg-splash-ink.png" />
+    <link rel="preload" as="image" href="/assets/opg-splash-gold.png" />
+    <link rel="preload" as="font" type="font/ttf" href="/assets/fonts/Heavitas.ttf" crossorigin />
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <div id="splash-screen" class="splash-screen" role="status" aria-live="polite">
+        <video id="splash-video" class="splash-video" muted playsinline preload="none" aria-hidden="true"></video>
+        <div class="splash-content">
+          <div class="splash-brand">
+            <span class="splash-mark">
+              <img class="splash-mark-light" src="/assets/opg-splash-ink.png" width="256" height="256" alt="" />
+              <img class="splash-mark-gold" src="/assets/opg-splash-gold.png" width="256" height="256" alt="" />
+            </span>
+            <span class="splash-lockup">
+              <span class="splash-wordmark"><span>Outsourced</span><span>Pro Global</span></span>
+              <span class="splash-subtext">We’re ready to hear about your hiring experience.</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <section class="survey-card" data-step="0" aria-labelledby="page-title" inert>
+        <header class="card-header">
+          <div class="brand"><img src="/assets/opg-full-logo.png" width="128" height="52" alt="Outsourced Pro Global" /></div>
+          <div class="header-copy">
+            <span class="eyebrow">OPG RECRUITMENT FEEDBACK</span>
+            <h1 id="page-title" tabindex="-1">Recruitment Process Feedback Form</h1>
+            <p class="intro">Hi there! Kindly share your feedback on the recruitment process you’ve just completed, including any feedback for how the recruiter can improve efficiency and effectiveness.</p>
+          </div>
+        </header>
+
+        <form id="survey-form" novalidate>
+          <div class="progress-area">
+            <p id="step-caption" tabindex="-1" aria-live="polite">Step 1 of 3 · Recruiter</p>
+            <div class="progress-track" aria-hidden="true"><span class="active"></span><span></span><span></span></div>
+          </div>
+
+          <div class="form-step" data-form-step="0">
+            <div class="field question-field">
+              <label id="recruiterName-label" for="recruiterName-trigger">Recruiter's Name</label>
+              <select id="recruiterName" name="recruiterName" hidden required>
+                <option value="">Select a recruiter</option>
+                <option>Ella</option><option>Hanna</option><option>Allen</option><option>Joy</option><option>Liz</option>
+                <option>Paris</option><option>Karen</option><option>Fia</option><option>Glam</option>
+              </select>
+              <div class="dropdown" data-dropdown="recruiterName">
+                <button id="recruiterName-trigger" class="dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="recruiterName-list" aria-labelledby="recruiterName-label recruiterName-display">
+                  <span id="recruiterName-display">Select a recruiter</span><span class="dropdown-chevron" aria-hidden="true"></span>
+                </button>
+                <ul id="recruiterName-list" class="dropdown-list" role="listbox" aria-labelledby="recruiterName-label" hidden></ul>
+              </div>
+            </div>
+            <div class="form-actions"><button class="next-button" type="button" data-next>Continue</button></div>
+          </div>
+
+          <div class="form-step" data-form-step="1" hidden>
+            <div class="rating-groups">
+              <fieldset class="rating-field" data-rating="professionalismRating">
+                <legend>1. Was the recruiter professional and respectful throughout the process?</legend>
+                <div class="rating-options">
+                  <label><input type="radio" name="professionalismRating" value="1" required /><span>1</span></label>
+                  <label><input type="radio" name="professionalismRating" value="2" /><span>2</span></label>
+                  <label><input type="radio" name="professionalismRating" value="3" /><span>3</span></label>
+                  <label><input type="radio" name="professionalismRating" value="4" /><span>4</span></label>
+                  <label><input type="radio" name="professionalismRating" value="5" /><span>5</span></label>
+                </div>
+                <div class="rating-endpoints"><span>Very Poor</span><span>Excellent</span></div>
+              </fieldset>
+              <fieldset class="rating-field" data-rating="roleClarityRating">
+                <legend>2. Did the recruiter clearly explain the role, requirements, and expectations?</legend>
+                <div class="rating-options">
+                  <label><input type="radio" name="roleClarityRating" value="1" required /><span>1</span></label>
+                  <label><input type="radio" name="roleClarityRating" value="2" /><span>2</span></label>
+                  <label><input type="radio" name="roleClarityRating" value="3" /><span>3</span></label>
+                  <label><input type="radio" name="roleClarityRating" value="4" /><span>4</span></label>
+                  <label><input type="radio" name="roleClarityRating" value="5" /><span>5</span></label>
+                </div>
+                <div class="rating-endpoints"><span>Very Poor</span><span>Excellent</span></div>
+              </fieldset>
+              <fieldset class="rating-field" data-rating="overallRating">
+                <legend>3. How would you rate your overall experience with the recruiter?</legend>
+                <div class="rating-options">
+                  <label><input type="radio" name="overallRating" value="1" required /><span>1</span></label>
+                  <label><input type="radio" name="overallRating" value="2" /><span>2</span></label>
+                  <label><input type="radio" name="overallRating" value="3" /><span>3</span></label>
+                  <label><input type="radio" name="overallRating" value="4" /><span>4</span></label>
+                  <label><input type="radio" name="overallRating" value="5" /><span>5</span></label>
+                </div>
+                <div class="rating-endpoints"><span>Very Poor</span><span>Excelllent</span></div>
+              </fieldset>
+            </div>
+            <div class="form-actions split-actions">
+              <button class="back-button" type="button" data-back>Back</button>
+              <button class="next-button" type="button" data-next>Continue</button>
+            </div>
+          </div>
+
+          <div class="form-step" data-form-step="2" hidden>
+            <div class="feedback-fields">
+              <div class="field">
+                <label for="recruiterFeedback">4. Feedback regarding your Recruiter's manner of handling your hiring process:<span class="question-detail">- What you liked<br />- What can be improved</span></label>
+                <textarea id="recruiterFeedback" name="recruiterFeedback" rows="4" maxlength="4000" placeholder="Share your feedback" required></textarea>
+                <span class="field-hint">Up to 4,000 characters</span>
+              </div>
+              <div class="field">
+                <label for="processImprovements">5. What aspects of this hiring process needs improvement?</label>
+                <textarea id="processImprovements" name="processImprovements" rows="4" maxlength="4000" placeholder="Share your suggestions" required></textarea>
+                <span class="field-hint">Up to 4,000 characters</span>
+              </div>
+            </div>
+            <div class="honeypot" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off" /></div>
+            <div class="form-actions split-actions">
+              <button class="back-button" type="button" data-back>Back</button>
+              <button id="submit-button" class="submit-button" type="submit"><span class="button-label">Submit response</span></button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <div id="feedback-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message" hidden>
+        <div class="modal-panel" data-state="notice">
+          <div class="modal-icon-wrap" aria-hidden="true">
+            <span class="confetti confetti-one"></span><span class="confetti confetti-two"></span><span class="confetti confetti-three"></span><span class="confetti confetti-four"></span>
+            <span class="confetti confetti-five"></span><span class="confetti confetti-six"></span><span class="confetti confetti-seven"></span><span class="confetti confetti-eight"></span>
+            <svg class="modal-success-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <defs><linearGradient id="success-gold" x1="12" y1="14" x2="68" y2="68"><stop stop-color="#FFE8A2"/><stop offset=".55" stop-color="#FFC63E"/><stop offset="1" stop-color="#E99B00"/></linearGradient></defs>
+              <circle cx="40" cy="40" r="32" fill="url(#success-gold)"/><circle cx="40" cy="40" r="27" stroke="white" stroke-opacity=".55"/>
+              <path d="M25 40.5 35.5 51 56 30" stroke="#221600" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="modal-notice-icon" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+              <circle cx="40" cy="40" r="32" fill="#F9BD36"/><circle cx="40" cy="40" r="27" stroke="white" stroke-opacity=".5"/>
+              <path d="M40 24v21" stroke="#221600" stroke-width="5" stroke-linecap="round"/><circle cx="40" cy="56" r="3" fill="#221600"/>
+            </svg>
+          </div>
+          <span class="modal-eyebrow">OPG RECRUITMENT FEEDBACK</span>
+          <h2 id="modal-title">Response saved</h2>
+          <p id="modal-message">Thank you for your feedback. Your response has been saved.</p>
+          <div id="privacy-content" class="privacy-content" tabindex="0" aria-label="Data privacy details" hidden>
+            <p>By submitting, you acknowledge how Outsourced Pro Global handles the recruitment feedback you provide.</p>
+            <ol>
+              <li><strong>Information collected:</strong> Your selected recruiter, three ratings, two written answers, and submission time. This form does not ask for your name or email. Please avoid including sensitive personal information in your comments.</li>
+              <li><strong>Purpose and access:</strong> The feedback is used to review recruiter conduct and improve the hiring process. It is sent through a secured workflow to a Google Workspace Sheet intended for staff handling recruitment feedback.</li>
+              <li><strong>Storage and retention:</strong> Responses remain in the Sheet until authorized staff manually delete them. No automatic deletion period is configured. Access to the Sheet and workflow must be restricted to authorized recruitment staff before launch.</li>
+            </ol>
+          </div>
+          <div id="privacy-actions" class="privacy-actions" hidden>
+            <p id="privacy-scroll-hint" class="privacy-scroll-hint" hidden>Scroll through the notice to enable acknowledgment.</p>
+            <label class="privacy-acknowledgment" for="privacy-ack"><input id="privacy-ack" type="checkbox" /> I have read and understand this data privacy disclaimer.</label>
+            <div class="privacy-buttons">
+              <button id="privacy-cancel" class="modal-button privacy-cancel" type="button">Back to form</button>
+              <button id="privacy-confirm" class="modal-button" type="button" disabled>Confirm and submit</button>
+            </div>
+          </div>
+          <button id="modal-close" class="modal-button" type="button">Done</button>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
