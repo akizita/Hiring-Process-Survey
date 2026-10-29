@@ -43,7 +43,7 @@ test('valid POST forwards only validated answers with server-only authentication
   assert.equal(response.headers.get('cache-control'), 'no-store');
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, env.N8N_WEBHOOK_URL);
-  assert.equal(calls[0].options.headers['X-OPG-Survey-Key'], secret);
+  assert.equal(calls[0].options.headers['X-OPG-Hiring-Survey-Key'], secret);
   assert.equal(calls[0].options.redirect, 'error');
   assert.equal(Object.hasOwn(calls[0].body, 'requestId'), false);
   assert.equal(calls[0].body.website, '');

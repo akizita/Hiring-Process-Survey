@@ -140,7 +140,7 @@ export function createSubmissionHandler({ env = process.env, fetchImpl = fetch, 
     try {
       const upstream = await fetchImpl(config.url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-OPG-Survey-Key': config.secret },
+        headers: { 'Content-Type': 'application/json', 'X-OPG-Hiring-Survey-Key': config.secret },
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(10000),
         redirect: 'error',
