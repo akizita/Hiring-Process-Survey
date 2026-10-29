@@ -51,6 +51,16 @@ async function assertReachable(page, label, action) {
     const size = `${viewport.width}x${viewport.height} ${label}`;
     assert.ok(layout.top >= -1 && layout.bottom <= layout.height + 1, `${size}: card fits viewport`);
     assert.ok(layout.rootWidth <= layout.width, `${size}: no horizontal overflow`);
+    if (label === 'ratings') {
+      const ratingWidth = await page.locator('.rating-field').first().evaluate((field) => ({
+        field: field.getBoundingClientRect().width,
+        row: field.querySelector('.peek-rating__row').getBoundingClientRect().width,
+        stars: [...field.querySelectorAll('.peek-rating__star')].map((star) => star.getBoundingClientRect().width),
+      }));
+      assert.ok(Math.abs(ratingWidth.field - ratingWidth.row) <= 1, `${size}: rating spans the card`);
+      assert.equal(ratingWidth.stars.length, 5, `${size}: five stars render`);
+      assert.ok(ratingWidth.stars.every((width) => width >= 44), `${size}: stars have usable hit areas`);
+    }
     const rect = await page.locator(action).boundingBox();
     assert.ok(rect && rect.y >= -1 && rect.y + rect.height <= viewport.height + 1, `${size}: action reachable after scrolling`);
     await page.locator('.survey-card').evaluate((card) => { card.scrollTop = 0; });
@@ -172,43 +182,59 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await page.getByRole('button', { name: 'Continue' }).click();
     assert.match(await page.locator('#modal-title').textContent(), /Choose a rating/);
     await page.getByRole('button', { name: 'OK' }).click();
-    assert.equal(await page.locator('.rating-options svg').count(), 15);
-    await page.locator('[data-rating="professionalismRating"] label:nth-child(4)').hover();
-    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 4, 'pointer previews a wave of stars');
-    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-peak').getAttribute('data-rating-tip'), '4 of 5');
-    await page.waitForTimeout(260);
-    const peekStyle = await page.locator('[data-rating="professionalismRating"] label.is-peak').evaluate((label) => ({
-      tooltipOpacity: getComputedStyle(label, '::after').opacity,
-      starTransform: getComputedStyle(label.querySelector('span')).transform,
-    }));
-    assert.equal(peekStyle.tooltipOpacity, '1', 'the preview displays its rating tooltip');
-    assert.notEqual(peekStyle.starTransform, 'none', 'the preview lifts the highlighted star');
+    assert.equal(await page.locator('.peek-rating__star').count(), 15);
+    const professionalism = page.locator('[data-rating="professionalismRating"]');
+    const professionalismStars = professionalism.locator('.peek-rating__star');
+    assert.equal(await professionalism.locator('.peek-rating').getAttribute('role'), 'radiogroup');
+    await professionalismStars.nth(3).hover();
+    assert.equal(await professionalism.locator('.peek-rating__glyph[data-lit="true"]').count(), 4, 'pointer previews a wave of stars');
+    assert.equal(await professionalism.locator('.peek-rating__tip').textContent(), '4');
+    assert.equal(await professionalism.locator('.peek-rating__tip').getAttribute('data-show'), 'true');
+    assert.match(await professionalism.locator('.peek-rating__lift').nth(3).getAttribute('style'), /translateY\(-6px\) scale\(1\.15\)/, 'the pointed star lifts and magnifies');
     await page.mouse.move(0, 0);
-    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 0, 'preview clears when pointer leaves');
-    await page.locator('[data-rating="professionalismRating"] label:nth-child(5)').click();
-    assert.equal(await page.locator('[data-rating="professionalismRating"] label.is-lit').count(), 5, 'selection persists after preview');
-    await page.locator('input[name="roleClarityRating"][value="3"]').focus();
+    assert.equal(await professionalism.locator('.peek-rating__glyph[data-lit="true"]').count(), 0, 'preview clears when pointer leaves');
+    const firstStar = await professionalismStars.nth(0).boundingBox();
+    const thirdStar = await professionalismStars.nth(2).boundingBox();
+    await page.mouse.move(firstStar.x + firstStar.width / 2, firstStar.y + firstStar.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(thirdStar.x + thirdStar.width / 2, thirdStar.y + thirdStar.height / 2, { steps: 5 });
+    await page.mouse.up();
+    assert.equal(await professionalism.locator('input[name="professionalismRating"]').inputValue(), '3', 'pointer drag commits the final star');
+    await professionalismStars.nth(4).click();
+    assert.equal(await professionalism.locator('input[name="professionalismRating"]').inputValue(), '5');
+    assert.equal(await professionalism.locator('.peek-rating__glyph[data-lit="true"]').count(), 5, 'selection persists after preview');
+    assert.equal(await professionalismStars.nth(4).getAttribute('aria-checked'), 'true');
+    const roleClarity = page.locator('[data-rating="roleClarityRating"]');
+    await roleClarity.locator('.peek-rating__star').nth(2).focus();
     await page.keyboard.press('Home');
-    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '1');
+    assert.equal(await roleClarity.locator('input[name="roleClarityRating"]').inputValue(), '1');
     await page.keyboard.press('End');
-    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '5');
-    await page.locator('input[name="roleClarityRating"][value="3"]').focus();
-    await page.keyboard.press('ArrowRight');
-    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '4');
-    await page.locator('[data-rating="overallRating"] label:nth-child(5)').click();
-    assert.equal(await page.locator('input[name="overallRating"]:checked').inputValue(), '5');
-    assert.equal(await page.locator('[data-rating="overallRating"] label.is-lit').count(), 5);
+    assert.equal(await roleClarity.locator('input[name="roleClarityRating"]').inputValue(), '5');
+    await page.keyboard.press('Delete');
+    assert.equal(await roleClarity.locator('input[name="roleClarityRating"]').inputValue(), '', 'keyboard can clear a choice');
+    await page.keyboard.press('End');
+    await page.keyboard.press('ArrowLeft');
+    assert.equal(await roleClarity.locator('input[name="roleClarityRating"]').inputValue(), '4');
+    const overall = page.locator('[data-rating="overallRating"]');
+    await overall.locator('.peek-rating__star').nth(4).click();
+    assert.equal(await overall.locator('input[name="overallRating"]').inputValue(), '5');
+    await overall.locator('.peek-rating__star').nth(4).click();
+    assert.equal(await overall.locator('input[name="overallRating"]').inputValue(), '', 'clicking a selected star clears it');
+    await overall.locator('.peek-rating__star').nth(4).click();
+    assert.equal(await overall.locator('input[name="overallRating"]').inputValue(), '5');
     assert.deepEqual(await page.locator('.rating-endpoints').allTextContents(), ['Very PoorExcellent', 'Very PoorExcellent', 'Very PoorExcelllent']);
     await page.setViewportSize({ width: 1366, height: 768 });
     await page.mouse.move(0, 0);
+    await page.locator('.survey-card').evaluate((card) => { card.scrollTop = 0; });
     await page.waitForTimeout(250);
     await page.screenshot({ path: join('test-artifacts', 'hiring-ratings-desktop.png') });
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.survey-card').evaluate((card) => { card.scrollTop = 0; });
     await page.screenshot({ path: join('test-artifacts', 'hiring-ratings-mobile.png') });
     await page.getByRole('button', { name: 'Back' }).click();
     assert.equal(await page.locator('#recruiterName').inputValue(), 'Glam');
     await page.getByRole('button', { name: 'Continue' }).click();
-    assert.equal(await page.locator('input[name="roleClarityRating"]:checked').inputValue(), '4');
+    assert.equal(await page.locator('input[name="roleClarityRating"]').inputValue(), '4');
     await page.getByRole('button', { name: 'Continue' }).click();
     assert.match(await page.locator('#step-caption').textContent(), /Step 3 of 3/);
     await assertReachable(page, 'feedback', '#submit-button');
@@ -271,12 +297,12 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     assert.match(await page.locator('#step-caption').textContent(), /Step 1 of 3/);
     assert.equal(await page.locator('#recruiterName').inputValue(), '');
     assert.equal(await page.locator('#recruiterFeedback').inputValue(), '');
-    assert.equal(await page.locator('.rating-options input:checked').count(), 0, 'a new response starts with clear ratings');
+    assert.deepEqual(await page.locator('.rating-field input[type="hidden"]').evaluateAll((inputs) => inputs.map((input) => input.value)), ['', '', ''], 'a new response starts with clear ratings');
     await page.locator('#recruiterName-trigger').click();
     await page.getByRole('option', { name: 'Ella' }).click();
     await page.getByRole('button', { name: 'Continue' }).click();
     for (const name of ['professionalismRating', 'roleClarityRating', 'overallRating']) {
-      await page.locator(`[data-rating="${name}"] label:nth-child(1)`).click();
+      await page.locator(`[data-rating="${name}"] .peek-rating__star`).first().click();
     }
     await page.getByRole('button', { name: 'Continue' }).click();
     await page.locator('#recruiterFeedback').fill('Helpful interview.');
@@ -321,10 +347,10 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     await reduced.locator('#recruiterName-trigger').click();
     await reduced.getByRole('option', { name: 'Ella' }).click();
     await reduced.getByRole('button', { name: 'Continue' }).click();
-    await reduced.locator('[data-rating="professionalismRating"] label:nth-child(3)').hover();
-    assert.equal(await reduced.locator('[data-rating="professionalismRating"] label.is-peak span').evaluate((span) => getComputedStyle(span).transform), 'none');
-    await reduced.locator('[data-rating="professionalismRating"] label:nth-child(3)').click();
-    assert.equal(await reduced.locator('input[name="professionalismRating"]:checked').inputValue(), '3');
+    await reduced.locator('[data-rating="professionalismRating"] .peek-rating__star').nth(2).hover();
+    assert.equal(await reduced.locator('[data-rating="professionalismRating"] .peek-rating__lift').nth(2).getAttribute('style'), 'transform: translateY(0px) scale(1);');
+    await reduced.locator('[data-rating="professionalismRating"] .peek-rating__star').nth(2).click();
+    assert.equal(await reduced.locator('input[name="professionalismRating"]').inputValue(), '3');
     await reduced.close();
   } finally {
     await browser.close();

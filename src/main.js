@@ -1,4 +1,5 @@
 import { buildPayload, classifyResponse, RECRUITERS, RATINGS, validFeedback, normalizeFeedback, SUCCESS_MESSAGE, SUBMISSION_ERROR_MESSAGE } from './survey.js';
+import { mountPeekRatings } from './rating-islands.jsx';
 
 const card = document.querySelector('.survey-card');
 const splash = document.querySelector('#splash-screen');
@@ -311,88 +312,7 @@ function createDropdown(select) {
 }
 
 dropdownControllers.push(createDropdown(recruiterField));
-
-// Adapt React Bits' Peek Rating interaction while retaining native radio inputs.
-// Native radios keep the form payload and keyboard/screen-reader behavior reliable.
-function createPeekRating(fieldset) {
-  const row = fieldset.querySelector('.rating-options');
-  const labels = [...row.querySelectorAll('label')];
-  const inputs = labels.map((label) => label.querySelector('input'));
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let hovered = -1;
-
-  function paint() {
-    const selected = inputs.findIndex((input) => input.checked);
-    const litThrough = hovered >= 0 ? hovered : selected;
-    labels.forEach((label, index) => {
-      label.classList.toggle('is-lit', index <= litThrough);
-      label.classList.toggle('is-peeking', hovered >= 0 && index <= hovered);
-      label.classList.toggle('is-peak', index === hovered);
-    });
-  }
-
-  labels.forEach((label, index) => {
-    const input = inputs[index];
-    const face = label.querySelector('span');
-    const star = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    star.setAttribute('viewBox', '0 0 24 24');
-    star.setAttribute('aria-hidden', 'true');
-    path.setAttribute('d', 'M12 2.4 14.9 8.3l6.5.94-4.7 4.58 1.1 6.48L12 17.25l-5.8 3.05 1.1-6.48-4.7-4.58 6.5-.94L12 2.4Z');
-    star.append(path);
-    face.replaceChildren(star);
-    label.dataset.ratingTip = `${input.value} of 5`;
-    input.setAttribute('aria-label', `${input.value} of 5`);
-
-    label.addEventListener('pointerenter', (event) => {
-      if (event.pointerType === 'touch' || input.disabled) return;
-      hovered = index;
-      paint();
-    });
-    input.addEventListener('change', () => {
-      paint();
-      if (!reduceMotion.matches) {
-        star.animate([
-          { transform: 'scale(1)' },
-          { transform: 'scale(1.32)' },
-          { transform: 'scale(1)' },
-        ], { duration: 280, easing: 'cubic-bezier(.2, .8, .2, 1)' });
-      }
-    });
-    input.addEventListener('keydown', (event) => {
-      if (event.key !== 'Home' && event.key !== 'End') return;
-      event.preventDefault();
-      const target = inputs[event.key === 'Home' ? 0 : inputs.length - 1];
-      target.focus();
-      if (!target.checked) {
-        target.checked = true;
-        target.dispatchEvent(new Event('change', { bubbles: true }));
-      }
-    });
-  });
-  row.addEventListener('pointerleave', () => {
-    hovered = -1;
-    paint();
-  });
-  paint();
-  return {
-    reset: () => {
-      hovered = -1;
-      inputs.forEach((input) => { input.disabled = false; });
-      paint();
-    },
-    lock: () => {
-      hovered = -1;
-      inputs.forEach((input) => { input.disabled = true; });
-      paint();
-    },
-    clearPreview: () => { hovered = -1; paint(); },
-  };
-}
-
-form.querySelectorAll('.rating-field').forEach((fieldset) => {
-  ratingControllers.push(createPeekRating(fieldset));
-});
+ratingControllers.push(...mountPeekRatings(form));
 
 function setStep(nextStep) {
   dropdownControllers.forEach((controller) => controller.close());
@@ -435,7 +355,7 @@ function validateStep(index) {
     for (const name of ratingNames) {
       if (!RATINGS.includes(form.elements.namedItem(name).value)) {
         const fieldset = form.querySelector(`[data-rating="${name}"]`);
-        showNotice('Choose a rating', 'Please choose a rating for each question to continue.', fieldset.querySelector('input[type="radio"]'));
+        showNotice('Choose a rating', 'Please choose a rating for each question to continue.', fieldset.querySelector('.peek-rating__star'));
         return false;
       }
     }

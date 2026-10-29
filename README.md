@@ -4,7 +4,7 @@ A light-theme, three-step survey for feedback on Outsourced Pro Global's recruit
 
 The site keeps the reference project's four-second OPG splash, three-segment progress indicator, custom recruiter dropdown, notice and feedback modals, keyboard focus handling, and responsive layout. Its full heading and introduction remain visible on all three steps. Yellow and orange aurora gradients appear behind the form and throughout the splash, including video playback and its fallback. A blurred, translucent card shows the centered gold glow beneath it. Reduced-motion visitors go straight to the form.
 
-The three 1–5 controls adapt the star preview, lift, tooltip, and selection pop from [React Bits Peek Rating](https://reactbits.dev/c/micro/peek-rating) using the site's existing vanilla JavaScript and native radio inputs. The underlying values, keyboard support, and survey submission format remain 1–5 strings. Reduced-motion visitors see the star state without its movement.
+The three 1–5 controls use the actual [React Bits Peek Rating](https://reactbits.dev/c/micro/peek-rating) JSX and CSS in small React islands; the rest of the survey remains vanilla JavaScript. The component provides pointer preview and drag selection, a moving tooltip, keyboard controls, and a selection pop. Its values feed the existing survey fields as 1–5 strings, and clearing a choice returns that field to incomplete. The star rows span the narrower card. Reduced-motion visitors see the star state without its movement. The copied component's license is in [src/components/REACT_BITS_LICENSE.md](src/components/REACT_BITS_LICENSE.md).
 
 ## Architecture
 
