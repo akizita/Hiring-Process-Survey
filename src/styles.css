@@ -44,6 +44,18 @@ button { cursor: pointer; }
   overflow: hidden;
   background: var(--page-background);
 }
+.page-shell::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 46% at 6% 16%, rgba(255, 222, 102, .58), transparent 78%),
+    radial-gradient(ellipse 37% 48% at 94% 12%, rgba(239, 171, 24, .38), transparent 78%),
+    radial-gradient(ellipse 50% 38% at 82% 91%, rgba(255, 240, 137, .62), transparent 80%),
+    radial-gradient(ellipse 43% 34% at 19% 88%, rgba(255, 194, 54, .28), transparent 80%);
+}
 .splash-screen {
   position: fixed;
   z-index: 20;
@@ -56,11 +68,22 @@ button { cursor: pointer; }
   background: var(--page-background);
   transition: opacity .38s ease, visibility .38s ease;
 }
+.splash-screen::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 44% 41% at 12% 23%, rgba(255, 238, 141, .48), transparent 78%),
+    radial-gradient(ellipse 43% 38% at 91% 25%, rgba(247, 190, 46, .36), transparent 80%),
+    radial-gradient(ellipse 55% 43% at 52% 95%, rgba(255, 223, 95, .40), transparent 82%);
+}
 .splash-screen.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
-.splash-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; transition: opacity .12s linear; }
+.splash-video { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; pointer-events: none; transition: opacity .12s linear; }
 .splash-screen.is-video-playing .splash-video { opacity: 1; }
 .splash-screen.is-fallback .splash-video { display: none; }
-.splash-content { position: relative; z-index: 1; width: min(100%, 1000px); max-height: 100%; display: grid; justify-items: center; opacity: 0; visibility: hidden; }
+.splash-content { position: relative; z-index: 2; width: min(100%, 1000px); max-height: 100%; display: grid; justify-items: center; opacity: 0; visibility: hidden; }
 .splash-screen.is-animating .splash-content { opacity: 1; visibility: visible; }
 .splash-brand { --mark-size: clamp(220px, 21vw, 300px); --mark-gap: 30px; position: relative; width: min(100%, calc(var(--mark-size) + var(--mark-gap) + 7.2em)); height: calc(var(--mark-size) + 24px); margin: 0 auto; font-size: clamp(48px, 5.3vw, 72px); }
 .splash-mark { position: absolute; z-index: 2; top: 9px; left: 0; width: var(--mark-size); height: var(--mark-size); }
@@ -82,6 +105,7 @@ button { cursor: pointer; }
 
 .survey-card {
   position: relative;
+  z-index: 1;
   width: min(100%, 820px);
   max-height: 100%;
   overflow-y: auto;
@@ -100,8 +124,9 @@ button { cursor: pointer; }
 .eyebrow { display: block; margin-bottom: 8px; color: var(--gold); font-size: 10px; letter-spacing: .16em; }
 h1 { margin-bottom: 8px; font-size: clamp(22px, 2.5vw, 28px); line-height: 1.18; letter-spacing: -.025em; }
 .intro { max-width: 530px; margin-bottom: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
-.survey-card[data-step="1"] h1, .survey-card[data-step="1"] .intro,
-.survey-card[data-step="2"] h1, .survey-card[data-step="2"] .intro { display: none; }
+.survey-card[data-step="1"] h1, .survey-card[data-step="2"] h1 { font-size: clamp(18px, 2vw, 21px); margin-bottom: 4px; }
+.survey-card[data-step="1"] .intro, .survey-card[data-step="2"] .intro { font-size: 12px; line-height: 1.4; }
+.survey-card[data-step="1"] .card-header, .survey-card[data-step="2"] .card-header { gap: 18px; }
 .progress-area { margin: 24px 0 22px; padding-top: 17px; border-top: 1px solid var(--border); }
 #step-caption { margin-bottom: 11px; color: #4d4436; font-size: 12px; letter-spacing: .02em; }
 #page-title:focus, #step-caption:focus { outline: none; }
@@ -221,6 +246,8 @@ form[aria-busy="true"] .form-actions button:disabled { cursor: wait; }
   .brand img { width: 120px; }
   h1 { font-size: clamp(22px, 5.5vw, 28px); }
   .intro { font-size: 12.5px; }
+  .survey-card[data-step="1"] h1, .survey-card[data-step="2"] h1 { font-size: 20px; }
+  .survey-card[data-step="1"] .brand, .survey-card[data-step="2"] .brand { margin-bottom: 10px; }
   .progress-area { margin: 18px 0 19px; padding-top: 14px; }
   .question-field > label { font-size: 16px; }
   .form-actions { margin-top: 20px; }
@@ -237,7 +264,7 @@ form[aria-busy="true"] .form-actions button:disabled { cursor: wait; }
   .page-shell { padding-block: 8px; }
   .survey-card { padding-top: 16px; padding-bottom: 16px; }
   .brand img { width: 110px; }
-  .header-copy .intro { display: none; }
+  .header-copy .intro { font-size: 11.5px; line-height: 1.35; }
   .progress-area { margin: 14px 0; padding-top: 11px; }
   .form-actions { margin-top: 15px; }
   .form-actions button { min-height: 43px; padding-block: 8px; }
@@ -260,7 +287,6 @@ form[aria-busy="true"] .form-actions button:disabled { cursor: wait; }
   .splash-brand { --mark-size: 100px; --mark-gap: 16px; width: min(100%, calc(var(--mark-size) + var(--mark-gap) + 260px)); height: 132px; font-size: clamp(26px, 4.7vw, 36px); }
   .splash-subtext { margin-top: 7px; font-size: 12.5px; }
   .survey-card { padding-top: 11px; padding-bottom: 11px; }
-  .eyebrow { display: none; }
   .brand img { width: 98px; }
   .progress-area { margin: 9px 0; padding-top: 8px; }
   #step-caption { margin-bottom: 6px; }

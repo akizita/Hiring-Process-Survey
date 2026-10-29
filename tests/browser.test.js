@@ -17,6 +17,28 @@ const successMessage = 'Thank you for your feedback. Your response has been save
 async function assertReachable(page, label, action) {
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
+    const heading = await page.locator('.card-header').evaluate((header) => {
+      const card = header.closest('.survey-card');
+      const title = header.querySelector('#page-title');
+      const intro = header.querySelector('.intro');
+      const eyebrow = header.querySelector('.eyebrow');
+      const headerRect = header.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      return {
+        titleVisible: getComputedStyle(title).display !== 'none',
+        introVisible: getComputedStyle(intro).display !== 'none',
+        eyebrowVisible: getComputedStyle(eyebrow).display !== 'none',
+        labelledByTitle: card.getAttribute('aria-labelledby') === 'page-title',
+        top: headerRect.top, bottom: headerRect.bottom,
+        cardTop: cardRect.top, cardBottom: cardRect.bottom,
+      };
+    });
+    assert.equal(heading.titleVisible, true, `${label}: title stays visible`);
+    assert.equal(heading.introVisible, true, `${label}: introduction stays visible`);
+    assert.equal(heading.eyebrowVisible, true, `${label}: eyebrow stays visible`);
+    assert.equal(heading.labelledByTitle, true, `${label}: card keeps its accessible title`);
+    assert.ok(heading.top >= heading.cardTop - 1 && heading.bottom <= heading.cardBottom + 1,
+      `${viewport.width}x${viewport.height} ${label}: header fits at the top of the card`);
     const layout = await page.locator('.survey-card').evaluate((card) => {
       const rect = card.getBoundingClientRect();
       card.scrollTop = card.scrollHeight;
@@ -107,6 +129,12 @@ test('light survey stays reachable and saves only after the workflow confirms a 
     assert.equal(await page.locator('.splash-mark-light').evaluate((img) => img.naturalWidth > 0), true);
     assert.equal(await page.locator('.splash-mark-gold').evaluate((img) => img.naturalWidth > 0), true);
     assert.equal(await page.locator('.splash-screen').evaluate((screen) => getComputedStyle(screen).backgroundColor), 'rgb(247, 245, 239)');
+    const aurora = await page.evaluate(() => ({
+      page: getComputedStyle(document.querySelector('.page-shell'), '::before').backgroundImage,
+      splash: getComputedStyle(document.querySelector('.splash-screen'), '::before').backgroundImage,
+    }));
+    assert.equal((aurora.page.match(/radial-gradient/g) || []).length, 4);
+    assert.equal((aurora.splash.match(/radial-gradient/g) || []).length, 3);
     await page.screenshot({ path: join('test-artifacts', 'hiring-splash-fallback-320.png') });
     await page.locator('#splash-screen').waitFor({ state: 'hidden', timeout: 5000 });
     assert.equal(await page.locator('.survey-card').evaluate((card) => card.inert), false);

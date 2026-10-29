@@ -315,7 +315,7 @@ function setStep(nextStep) {
   dropdownControllers.forEach((controller) => controller.close());
   step = nextStep;
   card.dataset.step = String(step);
-  card.setAttribute('aria-labelledby', step === 0 ? 'page-title' : 'step-caption');
+  card.setAttribute('aria-labelledby', 'page-title');
   steps.forEach((panel, index) => { panel.hidden = index !== step; });
   progressSegments.forEach((segment, index) => { segment.classList.toggle('active', index <= step); });
   caption.textContent = `Step ${step + 1} of 3 · ${stepNames[step]}`;

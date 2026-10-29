@@ -2,7 +2,7 @@
 
 A light-theme, three-step survey for feedback on Outsourced Pro Global's recruitment process. The questions and choices match the [source Google Form](https://docs.google.com/forms/d/e/1FAIpQLSfIlPaMtJIkudecPpzgE2E62geyzfqBy7TklidMk4YkhKkhGA/viewform), checked on 29 October 2026. The form asks for one recruiter, three ratings, and two written answers. It does not ask for the respondent's name or email.
 
-The site keeps the reference project's four-second OPG splash, three-segment progress indicator, custom recruiter dropdown, notice and feedback modals, keyboard focus handling, and responsive layout. The splash, fallback logo, form, and modals all use a light palette. Reduced-motion visitors go straight to the form.
+The site keeps the reference project's four-second OPG splash, three-segment progress indicator, custom recruiter dropdown, notice and feedback modals, keyboard focus handling, and responsive layout. Its full heading and introduction remain visible on all three steps. Soft yellow aurora gradients appear behind the form and throughout the splash, including video playback and its fallback. Reduced-motion visitors go straight to the form.
 
 ## Architecture
 
